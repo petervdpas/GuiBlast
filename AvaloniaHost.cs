@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
+using Avalonia.Media;
 
 namespace GuiBlast
 {
@@ -100,24 +101,30 @@ namespace GuiBlast
                 return;
             }
 
-            if (_lifetime == null)
-            {
-                _lifetime = (Application.Current?.ApplicationLifetime as ClassicDesktopStyleApplicationLifetime)
-                            ?? throw new InvalidOperationException("ClassicDesktopStyleApplicationLifetime required.");
-            }
+            _lifetime ??= (Application.Current?.ApplicationLifetime as ClassicDesktopStyleApplicationLifetime)
+                          ?? throw new InvalidOperationException("ClassicDesktopStyleApplicationLifetime required.");
 
             if (_lifetime.MainWindow == null)
             {
                 Owner = new Window
                 {
-                    IsVisible = false,
                     ShowInTaskbar = false,
-                    Width = 0,
-                    Height = 0,
-                    Opacity = 0
+                    CanResize = false,
+                    SystemDecorations = SystemDecorations.None,     // no chrome
+                    Background = Brushes.Transparent,
+                    Opacity = 0,                                     // fully transparent
+                    Width = 1,
+                    Height = 1,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    ShowActivated = false,
+                    IsHitTestVisible = false
                 };
+                // park it off-screen
+                Owner.Position = new PixelPoint(-10000, -10000);
+
                 _lifetime.MainWindow = Owner;
-                Owner.Show(); // must be shown to act as dialog owner
+                Owner.Show();
+                Owner.WindowState = WindowState.Minimized; // keep it minimized just in case
             }
             else
             {

@@ -13,6 +13,12 @@ class Program
         var name = Prompts.Input("GuiBlast Test", "Enter your name:", canResize: true);
         var confirm = Prompts.Confirm("Confirm", $"Continue as {name}?", width: 320, height: 120);
 
+        if (!confirm)
+        {
+            Console.WriteLine("User cancelled.");
+            return;
+        }
+
         // load form spec and show dynamic form
         var jsonPath = Path.Combine(AppContext.BaseDirectory, "form.json");
         var json = File.ReadAllText(jsonPath);
@@ -24,7 +30,9 @@ class Program
                 ["name"] = name,
                 ["when"] = DateTime.Now
             },
-            width: 520
+            width: 720,
+            height: 520,
+            canResize: true
         ).GetAwaiter().GetResult();
 
         Console.WriteLine($"Submitted: {result.Submitted}");
