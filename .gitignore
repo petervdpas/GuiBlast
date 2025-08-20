@@ -1,6 +1,6 @@
-# Build output (anywhere in tree)
-**/bin/
-**/obj/
+# Ignore build output everywhere
+**/[Bb]in/
+**/[Oo]bj/
 
 # User-specific files
 *.user
