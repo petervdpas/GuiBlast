@@ -1,0 +1,43 @@
+# Build output (anywhere in tree)
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+.history/
+
+# Rider / ReSharper
+.idea/
+*.DotSettings.user
+
+# Visual Studio
+*.rsuser
+*.vsp
+*.pdb
+
+# Logs
+*.log
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# OS-specific
+[Dd]esktop.ini
+[Tt]humbs.db
+ehthumbs.db
+*.DS_Store
+
+# Tooling
+*.bak
+*.swp
