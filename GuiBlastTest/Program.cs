@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using GuiBlast;
+using System.Collections.Generic;
 
 class Program
 {
@@ -7,15 +9,27 @@ class Program
     {
         Theme.Set(ThemeMode.Light);
 
-        // Auto-size (no dimensions)
+        // quick sanity dialogs
         var name = Prompts.Input("GuiBlast Test", "Enter your name:", canResize: true);
-        Console.WriteLine($"Hello, {name}!");
-
-        // Fixed size
         var confirm = Prompts.Confirm("Confirm", $"Continue as {name}?", width: 320, height: 120);
-        Console.WriteLine($"Confirm result: {confirm}");
 
-        // Resizable tall message
+        // load form spec and show dynamic form
+        var jsonPath = Path.Combine(AppContext.BaseDirectory, "form.json");
+        var json = File.ReadAllText(jsonPath);
+
+        var result = DynamicForm.ShowJsonAsync(
+            json,
+            new Dictionary<string, object?>
+            {
+                ["name"] = name,
+                ["when"] = DateTime.Now
+            },
+            width: 520
+        ).GetAwaiter().GetResult();
+
+        Console.WriteLine($"Submitted: {result.Submitted}");
+        Console.WriteLine(result.ToJson());
+
         Prompts.Message("Done", "Finished testing GuiBlast.", height: 200, canResize: true);
     }
 }
