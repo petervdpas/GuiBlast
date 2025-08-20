@@ -1,0 +1,29 @@
+﻿<!-- GuiBlast.csproj -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+
+    <!-- Packable (so you can dotnet pack to a NuGet) -->
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>GuiBlast</PackageId>
+    <Authors>Peter van de Pas</Authors>
+    <Company>Mnemonics</Company>
+    <Version>0.1.0</Version>
+    <Description>Simple Avalonia modal prompts for LINQPad, PowerShell, and .NET hosts.</Description>
+    <PackageProjectUrl>https://example.com</PackageProjectUrl>
+    <RepositoryUrl>https://example.com/repo</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.*" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.*" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
+  </ItemGroup>
+
+</Project>

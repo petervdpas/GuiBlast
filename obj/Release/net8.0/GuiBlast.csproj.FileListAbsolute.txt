@@ -1,0 +1,11 @@
+C:\Projects\GuiBlast\bin\Release\net8.0\GuiBlast.deps.json
+C:\Projects\GuiBlast\bin\Release\net8.0\GuiBlast.dll
+C:\Projects\GuiBlast\bin\Release\net8.0\GuiBlast.pdb
+C:\Projects\GuiBlast\obj\Release\net8.0\GuiBlast.csproj.AssemblyReference.cache
+C:\Projects\GuiBlast\obj\Release\net8.0\Avalonia\Resources.Inputs.cache
+C:\Projects\GuiBlast\obj\Release\net8.0\GuiBlast.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\GuiBlast\obj\Release\net8.0\GuiBlast.csproj.CoreCompileInputs.cache
+C:\Projects\GuiBlast\obj\Release\net8.0\GuiBlast.dll
+C:\Projects\GuiBlast\obj\Release\net8.0\refint\GuiBlast.dll
+C:\Projects\GuiBlast\obj\Release\net8.0\GuiBlast.pdb
+C:\Projects\GuiBlast\obj\Release\net8.0\ref\GuiBlast.dll
