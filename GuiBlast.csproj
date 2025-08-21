@@ -5,6 +5,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageOutputPath>bin\$(Configuration)</PackageOutputPath>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
@@ -30,10 +32,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.*"/>
-        <PackageReference Include="Avalonia.Desktop" Version="11.*"/>
+        <PackageReference Include="Avalonia" Version="11.3.4" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4"/>
+        <PackageReference Include="Avalonia.Headless" Version="11.3.4" />
+        <PackageReference Include="Avalonia.Headless.XUnit" Version="11.3.4" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4"/>
+        <PackageReference Include="xunit.assert" Version="2.9.2" />
+        <PackageReference Include="xunit.core" Version="2.9.2" />
+        <PackageReference Include="xunit.extensibility.core" Version="2.9.2" />
+        <PackageReference Include="xunit.extensibility.execution" Version="2.9.2" />
     </ItemGroup>
 
     <ItemGroup>

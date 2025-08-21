@@ -7,7 +7,7 @@ namespace GuiBlast
     /// <summary>
     /// Utility helpers for building common Avalonia UI patterns.
     /// </summary>
-    internal static class UiHelpers
+    public static class UiHelpers
     {
         /// <summary>
         /// Creates a horizontal row of buttons, aligned to the right.
