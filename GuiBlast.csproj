@@ -3,6 +3,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <IsPackable>true</IsPackable>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -46,5 +47,9 @@
         <None Include="assets/icon.png" Pack="true" PackagePath="assets/"/>
         <None Include="assets/LICENSE.txt" Pack="true" PackagePath="assets/"/>
         <None Include="README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\hacker.ico" />
     </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
-using System;
 using Avalonia.Controls;
 using Avalonia.Layout;
+using Avalonia.Platform;
 
 namespace GuiBlast
 {
@@ -52,6 +52,17 @@ namespace GuiBlast
                 Content = content
             };
 
+            // assign icon from DLL resources
+            try
+            {
+                var uri = new Uri("avares://GuiBlast/Assets/hacker.ico");
+                w.Icon = new WindowIcon(AssetLoader.Open(uri));
+            }
+            catch
+            {
+                // fail silently if asset not found
+                
+            }
             if (width is null && height is null)
             {
                 // Auto-fit to content
