@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -42,8 +38,6 @@ public static class DynamicForm
         bool canResize = false)
     {
         var opts = CachedJsonOptions;
-        opts.Converters.Add(new OptionJsonConverter());
-
         var spec = JsonSerializer.Deserialize<FormSpec>(json, opts)
                    ?? throw new ArgumentException("Invalid JSON spec.");
 
