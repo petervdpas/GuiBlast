@@ -1,29 +1,44 @@
 ﻿<!-- GuiBlast.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageOutputPath>bin\$(Configuration)</PackageOutputPath>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>GuiBlast</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Peter van de Pas</Authors>
+        <Description>Simple Avalonia-based modal prompts for .NET, LINQPad, and PowerShell.</Description>
+        <PackageTags>Avalonia;UIComponents;LINQPad;PowerShell</PackageTags>
+        <PackageLicenseFile>assets/LICENSE.txt</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>assets/icon.png</PackageIcon>
+        <DebugType>embedded</DebugType>
+        <Deterministic>true</Deterministic>
+        <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <EnableSourceLink>true</EnableSourceLink>
+        <RepositoryUrl>https://github.com/petervdpas/GuiBlast</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <RestoreLockedMode>true</RestoreLockedMode>
+    </PropertyGroup>
 
-    <!-- Packable (so you can dotnet pack to a NuGet) -->
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>GuiBlast</PackageId>
-    <Authors>Peter van de Pas</Authors>
-    <Company>Mnemonics</Company>
-    <Version>0.1.0</Version>
-    <Description>Simple Avalonia modal prompts for LINQPad, PowerShell, and .NET hosts.</Description>
-    <PackageProjectUrl>https://example.com</PackageProjectUrl>
-    <RepositoryUrl>https://example.com/repo</RepositoryUrl>
-  </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.*"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.*"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.*" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.*" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
-  </ItemGroup>
-
+    <ItemGroup>
+        <None Include="assets/icon.png" Pack="true" PackagePath="assets/"/>
+        <None Include="assets/LICENSE.txt" Pack="true" PackagePath="assets/"/>
+        <None Include="../README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
 </Project>
