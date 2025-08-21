@@ -17,20 +17,20 @@ namespace GuiBlast
     {
         public bool Submitted { get; init; }
         public Dictionary<string, object?> Values { get; init; } = new();
-        public object? this[string key] => Values.TryGetValue(key, out var v) ? v : null;
+        public object? this[string key] => Values.GetValueOrDefault(key);
     }
 
     // ---------- Spec DTOs ----------
     public sealed class FormSpec
     {
-        public string? Id { get; set; }
-        public string Title { get; set; } = "Form";
-        public SizeSpec? Size { get; set; }
+        public string? Id { get; init; }
+        public string Title { get; init; } = "Form";
+        public SizeSpec? Size { get; init; }
         public Dictionary<string, JsonElement>? Data { get; set; }
-        public List<FieldSpec> Fields { get; set; } = new();
-        public List<VisibilityRule>? Visibility { get; set; }
-        public Dictionary<string, ValidationRule>? Validation { get; set; }
-        public List<ActionSpec>? Actions { get; set; }
+        public List<FieldSpec> Fields { get; init; } = [];
+        public List<VisibilityRule>? Visibility { get; init; }
+        public Dictionary<string, ValidationRule>? Validation { get; init; }
+        public List<ActionSpec>? Actions { get; init; }
     }
 
     public sealed class SizeSpec { public double? Width { get; set; } public double? Height { get; set; } }
@@ -98,7 +98,7 @@ namespace GuiBlast
     }
 
     // ---------- Renderer ----------
-    public static class DynamicForm
+    public static partial class DynamicForm
     {
         public static Task<FormResult> ShowJsonAsync(
             string json,
@@ -128,7 +128,7 @@ namespace GuiBlast
 
         public static Task<FormResult> ShowAsync(FormSpec spec,
             double? width = null, double? height = null, bool canResize = false)
-        => AvaloniaHost.RunOnUI<FormResult>(async () =>
+        => AvaloniaHost.RunOnUI(async () =>
         {
             var model = new Dictionary<string, object?>(
                 (spec.Data ?? new()).ToDictionary(kv => kv.Key, kv => FromJson(kv.Value)));
@@ -174,25 +174,8 @@ namespace GuiBlast
 
             var tcs = new TaskCompletionSource<FormResult>();
 
-            async void Complete(bool submitted)
-            {
-                // Refresh model from getters just before submit/cancel
-                foreach (var kv in inputGetters)
-                    model[kv.Key] = kv.Value();
-
-                if (submitted)
-                {
-                    var valid = ValidateAll(spec, model, errorBlocks);
-                    if (!valid) return; // keep dialog open
-                }
-
-                tcs.TrySetResult(new FormResult { Submitted = submitted, Values = model });
-                await Task.Yield();
-                w.Close();
-            }
-
-            okBtn.Click += (_, __) => Complete(true);
-            cancelBtn.Click += (_, __) => Complete(false);
+            okBtn.Click += (_, _) => Complete(true);
+            cancelBtn.Click += (_, _) => Complete(false);
 
             // Default buttons behavior
             okBtn.IsDefault = true;
@@ -200,6 +183,23 @@ namespace GuiBlast
 
             await w.ShowDialog(AvaloniaHost.Owner);
             return await tcs.Task;
+
+            async void Complete(bool submitted)
+            {
+                // Refresh model from getters before submit/cancel
+                foreach (var kv in inputGetters)
+                    model[kv.Key] = kv.Value();
+
+                if (submitted)
+                {
+                    var valid = ValidateAll(spec, model, errorBlocks);
+                    if (!valid) return; // keep the dialog open
+                }
+
+                tcs.TrySetResult(new FormResult { Submitted = submitted, Values = model });
+                await Task.Yield();
+                w.Close();
+            }
         });
 
         // ---------- UI Builders ----------
@@ -259,7 +259,7 @@ namespace GuiBlast
                 case "textarea":
                     {
                         var tb = new TextBox { AcceptsReturn = true, MinHeight = 60, Watermark = f.Placeholder ?? "" };
-                        if (f.Rows is int r && r > 0) tb.MinHeight = 20 * r;
+                        if (f.Rows is { } r and > 0) tb.MinHeight = 20 * r;
                         tb.Text = initial?.ToString() ?? "";
                         getter = () => tb.Text;
                         return tb;
@@ -268,7 +268,7 @@ namespace GuiBlast
                 case "number":
                     {
                         var tb = new TextBox { Text = initial?.ToString() ?? "" };
-                        getter = () => double.TryParse(tb.Text, out var d) ? d : (object?)null;
+                        getter = () => double.TryParse(tb.Text, out var d) ? d : null;
                         return tb;
                     }
 
@@ -422,16 +422,16 @@ namespace GuiBlast
                         var panel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
                         var tb = new TextBox { IsReadOnly = true, Width = 320, Text = initial?.ToString() ?? "" };
                         var btn = new Button { Content = "Browse…" };
-                        btn.Click += async (_, __) =>
+                        btn.Click += async (_, _) =>
                         {
                             var top = TopLevel.GetTopLevel(AvaloniaHost.Owner);
                             var files = await top!.StorageProvider.OpenFilePickerAsync(
                                 new Avalonia.Platform.Storage.FilePickerOpenOptions { AllowMultiple = false });
 
-                            if (files?.Count > 0)
+                            if (files.Count > 0)
                             {
                                 var uri = files[0].Path; // Avalonia URI
-                                string text =
+                                var text =
                                     uri.IsAbsoluteUri && uri.Scheme == Uri.UriSchemeFile
                                         ? uri.LocalPath           // real filesystem path
                                         : uri.ToString();         // fallback (e.g., non-file providers)
@@ -466,25 +466,25 @@ namespace GuiBlast
             switch (c)
             {
                 case TextBox tb:
-                    tb.PropertyChanged += (s, e) => { if (e.Property == TextBox.TextProperty) onChange(); };
+                    tb.PropertyChanged += (_, e) => { if (e.Property == TextBox.TextProperty) onChange(); };
                     break;
                 case CheckBox cb:
-                    cb.PropertyChanged += (s, e) => { if (e.Property == ToggleButton.IsCheckedProperty) onChange(); };
+                    cb.PropertyChanged += (_, e) => { if (e.Property == ToggleButton.IsCheckedProperty) onChange(); };
                     break;
                 case ToggleSwitch ts:
-                    ts.PropertyChanged += (s, e) => { if (e.Property == ToggleButton.IsCheckedProperty) onChange(); };
+                    ts.PropertyChanged += (_, e) => { if (e.Property == ToggleButton.IsCheckedProperty) onChange(); };
                     break;
                 case ComboBox combo:
-                    combo.SelectionChanged += (_, __) => onChange();
+                    combo.SelectionChanged += (_, _) => onChange();
                     break;
                 case ListBox list:
-                    list.SelectionChanged += (_, __) => onChange();
+                    list.SelectionChanged += (_, _) => onChange();
                     break;
                 case DatePicker dp:
-                    dp.PropertyChanged += (s, e) => { if (e.Property == DatePicker.SelectedDateProperty) onChange(); };
+                    dp.PropertyChanged += (_, e) => { if (e.Property == DatePicker.SelectedDateProperty) onChange(); };
                     break;
                 case TimePicker tp:
-                    tp.PropertyChanged += (s, e) => { if (e.Property == TimePicker.SelectedTimeProperty) onChange(); };
+                    tp.PropertyChanged += (_, e) => { if (e.Property == TimePicker.SelectedTimeProperty) onChange(); };
                     break;
                 case Panel panel:
                     foreach (var child in panel.Children.OfType<Control>())
@@ -503,7 +503,7 @@ namespace GuiBlast
 
             foreach (var a in actions)
             {
-                var b = new Button { Content = a.Label ?? a.Id, MinWidth = 80 };
+                var b = new Button { Content = a.Label, MinWidth = 80 };
                 if (a.Submit || a.Primary) ok ??= b;
                 if (a.Dismiss) cancel ??= b;
             }
@@ -552,15 +552,15 @@ namespace GuiBlast
             foreach (var f in spec.Fields)
             {
                 if (!errorBlocks.TryGetValue(f.Key, out var err)) continue;
-                var v = model.TryGetValue(f.Key, out var mv) ? mv : null;
+                var v = model.GetValueOrDefault(f.Key);
 
-                string? msg = ValidateField(f, spec.Validation, v);
-                if (!string.IsNullOrEmpty(msg))
-                {
-                    err.Text = msg!;
-                    err.IsVisible = true;
-                    ok = false;
-                }
+                var msg = ValidateField(f, spec.Validation, v);
+                
+                if (string.IsNullOrEmpty(msg)) continue;
+                
+                err.Text = msg;
+                err.IsVisible = true;
+                ok = false;
             }
             return ok;
         }
@@ -578,37 +578,41 @@ namespace GuiBlast
             // Required
             if (rule.Required == true)
             {
-                if (v is null) return "Required.";
-                if (v is string s && string.IsNullOrWhiteSpace(s)) return "Required.";
-                if (v is Array a && a.Length == 0) return "Required.";
+                switch (v)
+                {
+                    case null:
+                    case string s when string.IsNullOrWhiteSpace(s):
+                    case Array { Length: 0 }:
+                        return "Required.";
+                }
             }
 
             // Length
             if (v is string sv)
             {
-                if (rule.MinLen is int minL && sv.Length < minL) return $"Min length: {minL}.";
-                if (rule.MaxLen is int maxL && sv.Length > maxL) return $"Max length: {maxL}.";
+                if (rule.MinLen is { } minL && sv.Length < minL) return $"Min length: {minL}.";
+                if (rule.MaxLen is { } maxL && sv.Length > maxL) return $"Max length: {maxL}.";
             }
 
             // Numeric
             var vd = ConvertToDouble(v);
             if (vd is not null)
             {
-                if (rule.Min is double min && vd < min) return $"Min value: {min}.";
-                if (rule.Max is double max && vd > max) return $"Max value: {max}.";
+                if (rule.Min is { } min && vd < min) return $"Min value: {min}.";
+                if (rule.Max is { } max && vd > max) return $"Max value: {max}.";
             }
 
             // Regex
             if (!string.IsNullOrWhiteSpace(rule.Regex) && v is string rxVal)
             {
-                if (!System.Text.RegularExpressions.Regex.IsMatch(rxVal, rule.Regex)) return "Invalid format.";
+                if (!Regex.IsMatch(rxVal, rule.Regex)) return "Invalid format.";
             }
 
             // Email
-            if (rule.Email == true && v is string ev && ev.Length > 0)
+            if (rule.Email == true && v is string { Length: > 0 } ev)
             {
                 // lightweight check
-                if (!Regex.IsMatch(ev, @"^[^@\s]+@[^@\s]+\.[^@\s]+$")) return "Invalid email.";
+                if (!MyRegex().IsMatch(ev)) return "Invalid email.";
             }
 
             return null;
@@ -619,7 +623,7 @@ namespace GuiBlast
         {
             var list = new List<Option>();
             if (f.Options is { Count: > 0 }) list.AddRange(f.Options);
-            return list.Count > 0 ? list : new List<Option> { new Option("", "(none)") };
+            return list.Count > 0 ? list : [new Option("", "(none)")];
         }
 
         private static object? FromJson(JsonElement e) => e.ValueKind switch
@@ -638,43 +642,63 @@ namespace GuiBlast
 
         private static double? ConvertToDouble(object? v)
         {
-            if (v is null) return null;
-            if (v is double d) return d;
-            if (v is float f) return f;
-            if (v is int i) return i;
-            if (v is long l) return l;
-            if (v is string s && double.TryParse(s, out var ds)) return ds;
-            return null;
+            return v switch
+            {
+                null => null,
+                double d => d,
+                float f => f,
+                int i => i,
+                long l => l,
+                string s when double.TryParse(s, out var ds) => ds,
+                _ => null
+            };
         }
 
         private static bool TryToDate(object? v, out DateTime dt)
         {
             dt = default;
-            if (v is DateTime x) { dt = x; return true; }
-            if (v is string s && DateTime.TryParse(s, out var p)) { dt = p; return true; }
-            return false;
+            switch (v)
+            {
+                case DateTime x:
+                    dt = x; return true;
+                case string s when DateTime.TryParse(s, out var p):
+                    dt = p; return true;
+                default:
+                    return false;
+            }
         }
 
         private static bool TryToTime(object? v, out TimeSpan ts)
         {
-            ts = default;
-            if (v is TimeSpan t) { ts = t; return true; }
-            if (v is string s && TimeSpan.TryParse(s, out var p)) { ts = p; return true; }
-            return false;
+            ts = TimeSpan.Zero;
+            switch (v)
+            {
+                case TimeSpan t:
+                    ts = t; return true;
+                case string s when TimeSpan.TryParse(s, out var p):
+                    ts = p; return true;
+                default:
+                    return false;
+            }
         }
 
         private static JsonElement SerializeToElementRelaxed(object? value)
         {
-            // Already a JsonElement?
-            if (value is JsonElement je) return je;
-
-            // Normalize types System.Text.Json doesn’t love by default
-            if (value is TimeSpan ts) return JsonSerializer.SerializeToElement(ts.ToString("c"));
-            if (value is DateTime dt) return JsonSerializer.SerializeToElement(dt);               // ISO 8601
-            if (value is DateTimeOffset dto) return JsonSerializer.SerializeToElement(dto);      // ISO 8601
+            return value switch
+            {
+                // Already a JsonElement?
+                JsonElement je => je,
+                // Normalize types System.Text.Json does not love by default
+                TimeSpan ts => JsonSerializer.SerializeToElement(ts.ToString("c")),
+                DateTime dt => JsonSerializer.SerializeToElement(dt),
+                DateTimeOffset dto => JsonSerializer.SerializeToElement(dto),
+                _ => JsonSerializer.SerializeToElement(value)
+            };
 
             // Everything else
-            return JsonSerializer.SerializeToElement(value);
         }
+
+        [GeneratedRegex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")]
+        private static partial Regex MyRegex();
     }
 }
