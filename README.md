@@ -34,23 +34,37 @@ Or install from [NuGet Gallery](https://www.nuget.org/packages/GuiBlast).
 using GuiBlast.Forms.Rendering;
 using GuiBlast.Forms.Result;
 
+namespace GuiBlast.TryOut;
+
 class Program
 {
     static void Main()
     {
-        Theme.Set(ThemeMode.Light);
+        // Step 1: Prompt for name
+        var userName = Prompts.Input("Your Name", "Please enter your name:");
 
-        // Simple input + confirmation
-        var name = Prompts.Input("GuiBlast Test", "Enter your name:", canResize: true);
-        if (!Prompts.Confirm("Confirm", $"Continue as {name}?")) return;
+        // Step 2: Load form JSON spec
+        var json = File.ReadAllText("form.json");
 
-        // Load a JSON form specification
-        var result = DynamicForm.ShowJsonAsync(File.ReadAllText("form.json")).Result;
+        // Step 3: Pre-fill the form with the name
+        var overrides = new Dictionary<string, object?>
+        {
+            ["name"] = userName
+        };
 
+        // Step 4: Show form
+        var result = DynamicForm.ShowJsonAsync(json, overrides).Result;
+
+        // Step 5: Print outcome
         Console.WriteLine($"Submitted: {result.Submitted}");
-        Console.WriteLine(result.ToJson());
+        Console.WriteLine("---- TEXT ----");
+        Console.WriteLine(result.ToText());
 
-        Prompts.Message("Done", "Finished testing GuiBlast.");
+        Console.WriteLine("---- JSON ----");
+        Console.WriteLine(result.ToJson(indented: true));
+
+        Console.WriteLine("---- DIRECT TO WRITER ----");
+        result.WriteText(); 
     }
 }
 ```
