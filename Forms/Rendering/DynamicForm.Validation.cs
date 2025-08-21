@@ -6,9 +6,26 @@ using GuiBlast.Forms.Model;
 
 namespace GuiBlast.Forms.Rendering;
 
+/// <summary>
+/// Provides validation logic for <see cref="FormSpec"/> fields,
+/// combining inline field flags with reusable <see cref="ValidationRule"/> entries.
+/// </summary>
 public static class DynamicFormValidation
 {
-    public static bool ValidateAll(FormSpec spec, Dictionary<string, object?> model,
+    /// <summary>
+    /// Validates all fields in the given form specification against the model values
+    /// and updates error message blocks accordingly.
+    /// </summary>
+    /// <param name="spec">The form specification containing fields and optional validation rules.</param>
+    /// <param name="model">The current model values keyed by field.</param>
+    /// <param name="errorBlocks">
+    /// A mapping of field keys to error display <see cref="TextBlock"/> controls.  
+    /// Validation messages will be written here.
+    /// </param>
+    /// <returns><c>true</c> if all fields are valid, otherwise <c>false</c>.</returns>
+    public static bool ValidateAll(
+        FormSpec spec,
+        Dictionary<string, object?> model,
         Dictionary<string, TextBlock> errorBlocks)
     {
         bool ok = true;
@@ -37,6 +54,15 @@ public static class DynamicFormValidation
         return ok;
     }
 
+    /// <summary>
+    /// Validates a single field value against inline specifications and validation rules.
+    /// </summary>
+    /// <param name="f">The field specification.</param>
+    /// <param name="all">Optional dictionary of reusable validation rules keyed by field.</param>
+    /// <param name="v">The value to validate.</param>
+    /// <returns>
+    /// An error message if validation fails, otherwise <c>null</c>.
+    /// </returns>
     private static string? ValidateField(FieldSpec f, Dictionary<string, ValidationRule>? all, object? v)
     {
         // Merge inline flags + named rules

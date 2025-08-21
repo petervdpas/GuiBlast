@@ -4,20 +4,45 @@ using Avalonia.Layout;
 
 namespace GuiBlast
 {
+    /// <summary>
+    /// Utility helpers for building common Avalonia UI patterns.
+    /// </summary>
     internal static class UiHelpers
     {
+        /// <summary>
+        /// Creates a horizontal row of buttons, aligned to the right.
+        /// </summary>
+        /// <param name="buttons">The buttons to include in the row.</param>
+        /// <returns>
+        /// A <see cref="StackPanel"/> containing the provided buttons in order.
+        /// </returns>
         public static StackPanel ButtonRow(params Control[] buttons)
             => new StackPanel
             {
                 Orientation = Orientation.Horizontal,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Spacing = 8
-            }.Also(sp => { foreach (var b in buttons) sp.Children.Add(b); });
+            }.Also(sp =>
+            {
+                foreach (var b in buttons)
+                    sp.Children.Add(b);
+            });
 
-        // NEW: optional width/height; falls back to auto-size if not provided
-        public static Window NewDialog(string title, Control content,
-                                       double? width = null, double? height = null,
-                                       bool canResize = false)
+        /// <summary>
+        /// Creates a new dialog <see cref="Window"/> with the given content and title.
+        /// </summary>
+        /// <param name="title">Dialog window title.</param>
+        /// <param name="content">The content control to place inside the dialog.</param>
+        /// <param name="width">Optional fixed width; if <c>null</c>, uses content width.</param>
+        /// <param name="height">Optional fixed height; if <c>null</c>, uses content height.</param>
+        /// <param name="canResize">Whether the dialog window can be resized.</param>
+        /// <returns>A new <see cref="Window"/> configured as a dialog.</returns>
+        public static Window NewDialog(
+            string title,
+            Control content,
+            double? width = null,
+            double? height = null,
+            bool canResize = false)
         {
             var w = new Window
             {
@@ -34,12 +59,22 @@ namespace GuiBlast
             }
             else
             {
-                if (width  is { } ww) w.Width  = ww;
+                if (width is { } ww) w.Width = ww;
                 if (height is { } hh) w.Height = hh;
             }
+
             return w;
         }
 
-        private static T Also<T>(this T obj, Action<T> a) { a(obj); return obj; }
+        /// <summary>
+        /// Extension method to allow fluent "also" initialization.
+        /// Executes <paramref name="a"/> with <paramref name="obj"/>
+        /// and then returns <paramref name="obj"/>.
+        /// </summary>
+        private static T Also<T>(this T obj, Action<T> a)
+        {
+            a(obj);
+            return obj;
+        }
     }
 }

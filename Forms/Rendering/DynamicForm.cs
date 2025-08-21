@@ -11,14 +11,35 @@ using GuiBlast.Forms.Result;
 
 namespace GuiBlast.Forms.Rendering;
 
+/// <summary>
+/// Provides the main API for rendering dynamic forms from JSON specifications
+/// or <see cref="FormSpec"/> objects.
+/// </summary>
 public static class DynamicForm
 {
     private static readonly JsonSerializerOptions CachedJsonOptions = CreateOptions();
-    
+
+    /// <summary>
+    /// Renders a dynamic form from a JSON specification and returns the user’s input as a <see cref="FormResult"/>.
+    /// </summary>
+    /// <param name="json">The JSON string defining the <see cref="FormSpec"/>.</param>
+    /// <param name="dataOverrides">
+    /// Optional dictionary of values that override or populate the form’s <c>data</c> block.
+    /// </param>
+    /// <param name="width">Optional window width.</param>
+    /// <param name="height">Optional window height.</param>
+    /// <param name="canResize">If <c>true</c>, the window can be resized by the user.</param>
+    /// <returns>
+    /// A <see cref="Task{TResult}"/> that completes with the <see cref="FormResult"/>
+    /// after the user submits or cancels the form.
+    /// </returns>
+    /// <exception cref="ArgumentException">Thrown if the JSON spec is invalid.</exception>
     public static Task<FormResult> ShowJsonAsync(
         string json,
         IDictionary<string, object?>? dataOverrides,
-        double? width = null, double? height = null, bool canResize = false)
+        double? width = null,
+        double? height = null,
+        bool canResize = false)
     {
         var opts = CachedJsonOptions;
         opts.Converters.Add(new OptionJsonConverter());
@@ -36,12 +57,28 @@ public static class DynamicForm
         return ShowAsync(spec, width, height, canResize);
     }
 
-    private static Task<FormResult> ShowAsync(FormSpec spec,
-        double? width = null, double? height = null, bool canResize = false)
+    /// <summary>
+    /// Displays a dynamic form based on a <see cref="FormSpec"/>.
+    /// </summary>
+    /// <param name="spec">The form specification object.</param>
+    /// <param name="width">Optional window width.</param>
+    /// <param name="height">Optional window height.</param>
+    /// <param name="canResize">If <c>true</c>, the window can be resized by the user.</param>
+    /// <returns>
+    /// A <see cref="Task{TResult}"/> that completes with the <see cref="FormResult"/>
+    /// after the user submits or cancels the form.
+    /// </returns>
+    private static Task<FormResult> ShowAsync(
+        FormSpec spec,
+        double? width = null,
+        double? height = null,
+        bool canResize = false)
         => AvaloniaHost.RunOnUI(async () =>
         {
             var model = new Dictionary<string, object?>(
-                (spec.Data ?? new()).ToDictionary(kv => kv.Key, kv => DynamicFormHelpers.FromJson(kv.Value)));
+                (spec.Data ?? new()).ToDictionary(
+                    kv => kv.Key,
+                    kv => DynamicFormHelpers.FromJson(kv.Value)));
 
             // UI bookkeeping
             var fieldContainers = new Dictionary<string, Control>();
@@ -107,11 +144,14 @@ public static class DynamicForm
                 }
 
                 tcs.TrySetResult(new FormResult { Submitted = submitted, Values = model });
-                await Task.Yield(); // still fine here to yield UI thread if needed
+                await Task.Yield(); // yield UI thread if needed
                 w.Close();
             }
         });
-    
+
+    /// <summary>
+    /// Creates default JSON serialization options for parsing form specifications.
+    /// </summary>
     private static JsonSerializerOptions CreateOptions()
     {
         var opts = new JsonSerializerOptions

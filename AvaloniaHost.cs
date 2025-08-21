@@ -9,9 +9,14 @@ using Avalonia.Media;
 
 namespace GuiBlast
 {
-    /// Single Avalonia host on a background UI thread.
-    /// - Reuses existing App if already initialized
-    /// - Creates a hidden owner MainWindow to support true modal ShowDialog(owner)
+    /// <summary>
+    /// Provides a singleton Avalonia host running on a dedicated background UI thread.
+    /// <list type="bullet">
+    /// <item>Reuses an existing <see cref="Application"/> if one is already initialized.</item>
+    /// <item>Creates a hidden owner <see cref="Window"/> to support proper modal <see cref="Window.ShowDialog{TWindow}(Window)"/> usage.</item>
+    /// <item>Ensures that all UI code executes on Avalonia's <see cref="Dispatcher.UIThread"/>.</item>
+    /// </list>
+    /// </summary>
     internal static class AvaloniaHost
     {
         private static readonly object Gate = new();
@@ -20,10 +25,21 @@ namespace GuiBlast
         private static readonly CancellationTokenSource Cts = new();
 
         private static Dispatcher Ui { get; set; } = null!;
+
+        /// <summary>
+        /// Gets the hidden <see cref="Window"/> used as the owner for modal dialogs.
+        /// Ensures that calls to <see cref="Window.ShowDialog{TWindow}(Window)"/> always have a valid owner.
+        /// </summary>
         public static Window Owner { get; private set; } = null!;
+
         private static ClassicDesktopStyleApplicationLifetime? _lifetime;
 
-        /// Marshal a function to the Avalonia UI thread.
+        /// <summary>
+        /// Executes the specified asynchronous function on Avalonia's UI thread.
+        /// </summary>
+        /// <typeparam name="T">The result type of the asynchronous operation.</typeparam>
+        /// <param name="func">The asynchronous function to execute on the UI thread.</param>
+        /// <returns>A <see cref="Task{TResult}"/> that completes with the result of <paramref name="func"/>.</returns>
         public static Task<T> RunOnUI<T>(Func<Task<T>> func)
         {
             EnsureStarted();
@@ -36,6 +52,10 @@ namespace GuiBlast
             return tcs.Task;
         }
 
+        /// <summary>
+        /// Ensures that the Avalonia application and UI thread are initialized.
+        /// If not already started, a new background UI thread is created.
+        /// </summary>
         private static void EnsureStarted()
         {
             if (_started) { EnsureOwner(); return; }
@@ -91,6 +111,10 @@ namespace GuiBlast
             }
         }
 
+        /// <summary>
+        /// Ensures that the hidden <see cref="Owner"/> window exists.
+        /// This window is required for modal dialogs and is created only once.
+        /// </summary>
         private static void EnsureOwner()
         {
             if (!Dispatcher.UIThread.CheckAccess())
@@ -118,13 +142,13 @@ namespace GuiBlast
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     ShowActivated = false,
                     IsHitTestVisible = false,
-                    // park it off-screen
+                    // Park it off-screen
                     Position = new PixelPoint(-10000, -10000)
                 };
 
                 _lifetime.MainWindow = Owner;
                 Owner.Show();
-                Owner.WindowState = WindowState.Minimized; // keep it minimized just in case
+                Owner.WindowState = WindowState.Minimized; // Keep it minimized just in case
             }
             else
             {
@@ -132,13 +156,19 @@ namespace GuiBlast
             }
         }
 
+        /// <summary>
+        /// Builds a minimal Avalonia <see cref="AppBuilder"/>.
+        /// Used when starting a fresh Avalonia application in the background.
+        /// </summary>
         private static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                          .UsePlatformDetect()
                          .WithInterFont()
                          .LogToTrace();
 
-        /// Optional: stop the background UI thread
+        /// <summary>
+        /// Shuts down the background Avalonia UI thread and cancels the dispatcher loop.
+        /// </summary>
         public static void Shutdown() => Cts.Cancel();
     }
 }

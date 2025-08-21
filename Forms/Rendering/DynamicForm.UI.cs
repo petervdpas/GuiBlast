@@ -10,11 +10,35 @@ using GuiBlast.Forms.Model;
 
 namespace GuiBlast.Forms.Rendering;
 
+/// <summary>
+/// Provides UI construction helpers for dynamically building form fields,
+/// wiring change notifications, and creating action buttons.
+/// </summary>
 public static class DynamicFormUi
 {
     // ---------- UI Builders ----------
-    public static Control BuildFieldRow(FieldSpec f, object? initial,
-        out Func<object?> getter, out TextBlock errorBlock)
+
+    /// <summary>
+    /// Builds a complete UI row for a field, including label, input control,
+    /// optional help text, and an error <see cref="TextBlock"/>.
+    /// </summary>
+    /// <param name="f">The field specification used to construct the controls.</param>
+    /// <param name="initial">Initial value to populate the input with.</param>
+    /// <param name="getter">
+    /// Outputs a delegate that returns the current value of the input control.
+    /// </param>
+    /// <param name="errorBlock">
+    /// Outputs the <see cref="TextBlock"/> used to display validation errors for this field.
+    /// </param>
+    /// <returns>
+    /// A <see cref="StackPanel"/> container holding the label, input, help (if any), and error block.
+    /// The panel’s <see cref="Control.Tag"/> is set to the field key for visibility toggling.
+    /// </returns>
+    public static Control BuildFieldRow(
+        FieldSpec f,
+        object? initial,
+        out Func<object?> getter,
+        out TextBlock errorBlock)
     {
         var label = new TextBlock
         {
@@ -52,6 +76,14 @@ public static class DynamicFormUi
         return panel;
     }
 
+    /// <summary>
+    /// Creates the appropriate input control for a field type and returns a getter
+    /// that extracts the current value from that control.
+    /// </summary>
+    /// <param name="f">The field specification.</param>
+    /// <param name="initial">Initial value to set on the control.</param>
+    /// <param name="getter">Outputs a function that reads the current value.</param>
+    /// <returns>The constructed input <see cref="Control"/>.</returns>
     private static Control BuildInput(FieldSpec f, object? initial, out Func<object?> getter)
     {
         switch (f.Type.ToLowerInvariant())
@@ -110,7 +142,6 @@ public static class DynamicFormUi
                 getter = () => (combo.SelectedItem as Option)?.Value;
                 return combo;
             }
-
 
             case "multiselect":
             {
@@ -274,6 +305,12 @@ public static class DynamicFormUi
         }
     }
 
+    /// <summary>
+    /// Wires change notifications for a control (and, for containers, its children)
+    /// to invoke the provided <paramref name="onChange"/> callback when the value changes.
+    /// </summary>
+    /// <param name="c">The root control to observe.</param>
+    /// <param name="onChange">Callback invoked when an observed value changes.</param>
     public static void WireChanges(Control c, Action onChange)
     {
         switch (c)
@@ -321,6 +358,17 @@ public static class DynamicFormUi
         }
     }
 
+    /// <summary>
+    /// Builds OK/Cancel buttons from the provided <see cref="ActionSpec"/>s,
+    /// falling back to default “OK” and “Cancel” if none are supplied.
+    /// </summary>
+    /// <param name="actions">
+    /// Optional action specifications. The first action with <c>Submit</c> or <c>Primary</c> becomes OK;
+    /// the first action with <c>Dismiss</c> becomes Cancel.
+    /// </param>
+    /// <returns>
+    /// A tuple of the OK and Cancel <see cref="Button"/>s.
+    /// </returns>
     public static (Button ok, Button cancel) BuildButtons(List<ActionSpec>? actions)
     {
         // Defaults if no actions provided

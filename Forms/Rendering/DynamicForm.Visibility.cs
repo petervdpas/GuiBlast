@@ -5,9 +5,31 @@ using GuiBlast.Forms.Model;
 
 namespace GuiBlast.Forms.Rendering;
 
+/// <summary>
+/// Applies <see cref="VisibilityRule"/> logic to form field containers,
+/// dynamically showing or hiding controls based on model values.
+/// </summary>
 public static class DynamicFormVisibility
 {
-    public static void ApplyVisibility(List<VisibilityRule>? rules,
+    /// <summary>
+    /// Applies visibility rules to form field containers.
+    /// </summary>
+    /// <param name="rules">
+    /// A list of <see cref="VisibilityRule"/> objects that determine
+    /// which fields should be shown or hidden.
+    /// </param>
+    /// <param name="model">
+    /// The current form model (field keys mapped to values).
+    /// </param>
+    /// <param name="containers">
+    /// A mapping of field keys to their corresponding UI <see cref="Control"/> containers.
+    /// </param>
+    /// <remarks>
+    /// All containers are reset to visible before rules are applied.  
+    /// If multiple rules apply, explicit <c>Hide</c> takes precedence over <c>Show</c>.
+    /// </remarks>
+    public static void ApplyVisibility(
+        List<VisibilityRule>? rules,
         Dictionary<string, object?> model,
         Dictionary<string, Control> containers)
     {
@@ -30,7 +52,12 @@ public static class DynamicFormVisibility
         }
 
         // Hide takes precedence
-        foreach (var k in show) if (!hide.Contains(k) && containers.TryGetValue(k, out var c1)) c1.IsVisible = true;
-        foreach (var k in hide) if (containers.TryGetValue(k, out var c2)) c2.IsVisible = false;
+        foreach (var k in show)
+            if (!hide.Contains(k) && containers.TryGetValue(k, out var c1))
+                c1.IsVisible = true;
+
+        foreach (var k in hide)
+            if (containers.TryGetValue(k, out var c2))
+                c2.IsVisible = false;
     }
 }
