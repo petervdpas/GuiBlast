@@ -7,11 +7,9 @@ using System.Text.Json;
 
 namespace GuiBlast
 {
-    /// Pretty/text + JSON output helpers for FormResult
+    /// Pretty/text and JSON output helpers for FormResult
     public static class FormResultFormatter
     {
-        // --- Public API ---
-
         /// Human-readable lines like: key = value  (arrays shown as [a, b, c])
         public static string ToText(FormResult result)
         {
@@ -19,14 +17,12 @@ namespace GuiBlast
             {
                 $"Submitted: {result.Submitted}"
             };
-
-            foreach (var kv in result.Values)
-                lines.Add($"{kv.Key} = {FormatValue(kv.Value)}");
+            lines.AddRange(result.Values.Select(kv => $"{kv.Key} = {FormatValue(kv.Value)}"));
 
             return string.Join(Environment.NewLine, lines);
         }
 
-        /// JSON dump with sane formats (ISO datetimes, TimeSpan as "c", enumerables as arrays)
+        /// JSON dump with correct formats (ISO datetime, TimeSpan as "c", enumerable as arrays)
         public static string ToJson(FormResult result, bool indented = true)
         {
             var options = new JsonSerializerOptions
@@ -57,45 +53,49 @@ namespace GuiBlast
 
         private static string FormatValue(object? v)
         {
-            if (v is null) return "null";
-
-            // Flatten strings first (they're IEnumerable too)
-            if (v is string s) return s;
-
-            if (v is DateTime dt) return dt.ToString("O", CultureInfo.InvariantCulture);  // ISO 8601
-            if (v is DateTimeOffset dto) return dto.ToString("O", CultureInfo.InvariantCulture);
-            if (v is TimeSpan ts) return ts.ToString("c", CultureInfo.InvariantCulture);
-
-            // Arrays / lists / IEnumerable
-            if (v is IEnumerable en && v is not string)
+            switch (v)
             {
-                var parts = en.Cast<object?>().Select(FormatValue);
-                return "[" + string.Join(", ", parts) + "]";
+                case null:
+                    return "null";
+                // Flatten strings first (they're IEnumerable too)
+                case string s:
+                    return s;
+                case DateTime dt:
+                    return dt.ToString("O", CultureInfo.InvariantCulture);  // ISO 8601
+                case DateTimeOffset dto:
+                    return dto.ToString("O", CultureInfo.InvariantCulture);
+                case TimeSpan ts:
+                    return ts.ToString("c", CultureInfo.InvariantCulture);
             }
 
-            // Numbers, bools, everything else
-            return Convert.ToString(v, CultureInfo.InvariantCulture) ?? v.ToString()!;
+            // Arrays / lists / IEnumerable
+            if (v is not (IEnumerable en and not string))
+            {
+                return Convert.ToString(v, CultureInfo.InvariantCulture) ?? v.ToString()!;
+            }
+            
+            var parts = en.Cast<object?>().Select(FormatValue);
+            return "[" + string.Join(", ", parts) + "]";
+
+            // Numbers, bool, everything else
         }
 
         // Convert values to JSON-safe shapes (no custom types leaking through)
         private static object? Normalize(object? v)
         {
-            if (v is null) return null;
-            if (v is string s) return s;
-
-            if (v is DateTime dt) return dt.ToString("O", CultureInfo.InvariantCulture);
-            if (v is DateTimeOffset dto) return dto.ToString("O", CultureInfo.InvariantCulture);
-            if (v is TimeSpan ts) return ts.ToString("c", CultureInfo.InvariantCulture);
-
-            if (v is IEnumerable en && v is not string)
+            return v switch
             {
-                var list = new List<object?>();
-                foreach (var item in en) list.Add(Normalize(item));
-                return list;
-            }
-
-            // primitives, bools, etc.
-            return v;
+                null => null,
+                string s => s,
+                DateTime dt => dt.ToString("O", CultureInfo.InvariantCulture),
+                DateTimeOffset dto => dto.ToString("O", CultureInfo.InvariantCulture),
+                TimeSpan ts => ts.ToString("c", CultureInfo.InvariantCulture),
+                _ => v is IEnumerable en and not string
+                    ? (from object? item in en select Normalize(item)).ToList()
+                    :
+                    // primitives, bool, etc.
+                    v
+            };
         }
     }
 

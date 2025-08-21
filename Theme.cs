@@ -9,7 +9,7 @@ namespace GuiBlast
     {
         public static ThemeMode Current { get; private set; } = ThemeMode.Light;
 
-        public static Task SetAsync(ThemeMode mode)
+        private static Task SetAsync(ThemeMode mode)
         {
             Current = mode;
 
@@ -20,7 +20,7 @@ namespace GuiBlast
                     ? Avalonia.Styling.ThemeVariant.Dark
                     : Avalonia.Styling.ThemeVariant.Light;
 
-                if (Application.Current is Application app)
+                if (Application.Current is { } app)
                     app.RequestedThemeVariant = variant;
 
                 return await Task.FromResult<object?>(null);

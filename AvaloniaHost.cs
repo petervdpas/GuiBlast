@@ -17,10 +17,10 @@ namespace GuiBlast
         private static readonly object Gate = new();
         private static bool _started;
         private static readonly ManualResetEventSlim Ready = new(false);
-        private static CancellationTokenSource _cts = new();
+        private static readonly CancellationTokenSource Cts = new();
 
-        public static Dispatcher UI { get; private set; } = default!;
-        public static Window Owner { get; private set; } = default!;
+        private static Dispatcher Ui { get; set; } = null!;
+        public static Window Owner { get; private set; } = null!;
         private static ClassicDesktopStyleApplicationLifetime? _lifetime;
 
         /// Marshal a function to the Avalonia UI thread.
@@ -28,7 +28,7 @@ namespace GuiBlast
         {
             EnsureStarted();
             var tcs = new TaskCompletionSource<T>();
-            UI.Post(async () =>
+            Ui.Post(async void () =>
             {
                 try { tcs.TrySetResult(await func()); }
                 catch (Exception ex) { tcs.TrySetException(ex); }
@@ -36,7 +36,7 @@ namespace GuiBlast
             return tcs.Task;
         }
 
-        public static void EnsureStarted()
+        private static void EnsureStarted()
         {
             if (_started) { EnsureOwner(); return; }
 
@@ -45,9 +45,9 @@ namespace GuiBlast
                 if (_started) { EnsureOwner(); return; }
 
                 // Reuse an existing Avalonia Application if present
-                if (Application.Current is Application existing)
+                if (Application.Current is { } existing)
                 {
-                    UI = Dispatcher.UIThread;
+                    Ui = Dispatcher.UIThread;
                     _lifetime = existing.ApplicationLifetime as ClassicDesktopStyleApplicationLifetime
                                 ?? throw new InvalidOperationException("ClassicDesktopStyleApplicationLifetime required.");
                     EnsureOwner();
@@ -67,13 +67,13 @@ namespace GuiBlast
 
                     BuildAvaloniaApp().SetupWithLifetime(_lifetime);
 
-                    UI = Dispatcher.UIThread;
+                    Ui = Dispatcher.UIThread;
 
                     EnsureOwner();
                     Ready.Set();
 
                     // Keep UI thread alive
-                    Dispatcher.UIThread.MainLoop(_cts.Token);
+                    Dispatcher.UIThread.MainLoop(Cts.Token);
                 })
                 {
                     Name = "GuiBlast-UI",
@@ -117,10 +117,10 @@ namespace GuiBlast
                     Height = 1,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     ShowActivated = false,
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
+                    // park it off-screen
+                    Position = new PixelPoint(-10000, -10000)
                 };
-                // park it off-screen
-                Owner.Position = new PixelPoint(-10000, -10000);
 
                 _lifetime.MainWindow = Owner;
                 Owner.Show();
@@ -139,6 +139,6 @@ namespace GuiBlast
                          .LogToTrace();
 
         /// Optional: stop the background UI thread
-        public static void Shutdown() => _cts.Cancel();
+        public static void Shutdown() => Cts.Cancel();
     }
 }

@@ -34,8 +34,8 @@ namespace GuiBlast
             }
             else
             {
-                if (width  is double ww) w.Width  = ww;
-                if (height is double hh) w.Height = hh;
+                if (width  is { } ww) w.Width  = ww;
+                if (height is { } hh) w.Height = hh;
             }
             return w;
         }

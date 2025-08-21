@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Layout;
 
 namespace GuiBlast
 {
@@ -18,14 +17,14 @@ namespace GuiBlast
             bool canResize = false)
             => InputAsync(title, message, initialText, width, height, canResize).GetAwaiter().GetResult();
 
-        public static Task<string> InputAsync(
+        private static Task<string> InputAsync(
             string title,
             string message,
             string? initialText = "",
             double? width = null,
             double? height = null,
             bool canResize = false)
-            => AvaloniaHost.RunOnUI<string>(async () =>
+            => AvaloniaHost.RunOnUI(async () =>
             {
                 var input = new TextBox { Margin = new Thickness(0, 8, 0, 8), Text = initialText ?? "" };
                 var ok = new Button { Content = "OK", MinWidth = 80, IsDefault = true };
@@ -52,10 +51,10 @@ namespace GuiBlast
 
                 void Complete(string s) { if (!tcs.Task.IsCompleted) tcs.TrySetResult(s); win.Close(); }
 
-                ok.Click += (_, __) => Complete(input.Text ?? "");
-                cancel.Click += (_, __) => Complete("");
+                ok.Click += (_, _) => Complete(input.Text ?? "");
+                cancel.Click += (_, _) => Complete("");
 
-                win.Opened += (_, __) => { input.Focus(); input.CaretIndex = input.Text?.Length ?? 0; };
+                win.Opened += (_, _) => { input.Focus(); input.CaretIndex = input.Text?.Length ?? 0; };
 
                 await win.ShowDialog(AvaloniaHost.Owner);
                 return await tcs.Task;
@@ -72,7 +71,7 @@ namespace GuiBlast
             bool canResize = false)
             => ConfirmAsync(title, message, yesText, noText, width, height, canResize).GetAwaiter().GetResult();
 
-        public static Task<bool> ConfirmAsync(
+        private static Task<bool> ConfirmAsync(
             string title,
             string message,
             string yesText = "OK",
@@ -80,7 +79,7 @@ namespace GuiBlast
             double? width = null,
             double? height = null,
             bool canResize = false)
-            => AvaloniaHost.RunOnUI<bool>(async () =>
+            => AvaloniaHost.RunOnUI(async () =>
             {
                 var yes = new Button { Content = yesText, MinWidth = 80, IsDefault = true };
                 var no = new Button { Content = noText, MinWidth = 80, IsCancel = true };
@@ -105,8 +104,8 @@ namespace GuiBlast
 
                 void Complete(bool v) { if (!tcs.Task.IsCompleted) tcs.TrySetResult(v); win.Close(); }
 
-                yes.Click += (_, __) => Complete(true);
-                no.Click += (_, __) => Complete(false);
+                yes.Click += (_, _) => Complete(true);
+                no.Click += (_, _) => Complete(false);
 
                 await win.ShowDialog(AvaloniaHost.Owner);
                 return await tcs.Task;
@@ -121,7 +120,7 @@ namespace GuiBlast
             bool canResize = false)
             => MessageAsync(title, message, width, height, canResize).GetAwaiter().GetResult();
 
-        public static async Task MessageAsync(
+        private static async Task MessageAsync(
             string title,
             string message,
             double? width = null,
@@ -150,7 +149,7 @@ namespace GuiBlast
                 var win = UiHelpers.NewDialog(title, layout, width, height, canResize);
                 var tcs = new TaskCompletionSource<object?>();
 
-                ok.Click += (_, __) =>
+                ok.Click += (_, _) =>
                 {
                     if (!tcs.Task.IsCompleted) tcs.TrySetResult(null);
                     win.Close();

@@ -9,20 +9,24 @@ namespace GuiBlast
     {
         public override Option Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType == JsonTokenType.String)
+            switch (reader.TokenType)
             {
-                var s = reader.GetString();
-                return new Option(s, s);
+                case JsonTokenType.String:
+                {
+                    var s = reader.GetString();
+                    return new Option(s, s);
+                }
+                case JsonTokenType.StartObject:
+                {
+                    using var doc = JsonDocument.ParseValue(ref reader);
+                    var root = doc.RootElement;
+                    var value = root.TryGetProperty("value", out var v) ? v.GetString() : null;
+                    var label = root.TryGetProperty("label", out var l) ? l.GetString() : null;
+                    return new Option(value, label);
+                }
+                default:
+                    throw new JsonException("Option must be a string or an object with 'value'/'label'.");
             }
-            if (reader.TokenType == JsonTokenType.StartObject)
-            {
-                using var doc = JsonDocument.ParseValue(ref reader);
-                var root = doc.RootElement;
-                string? value = root.TryGetProperty("value", out var v) ? v.GetString() : null;
-                string? label = root.TryGetProperty("label", out var l) ? l.GetString() : null;
-                return new Option(value, label);
-            }
-            throw new JsonException("Option must be a string or an object with 'value'/'label'.");
         }
 
         public override void Write(Utf8JsonWriter writer, Option value, JsonSerializerOptions options)
