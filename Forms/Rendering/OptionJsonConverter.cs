@@ -1,9 +1,11 @@
 // OptionJsonConverter.cs
+
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using GuiBlast.Forms.Model;
 
-namespace GuiBlast
+namespace GuiBlast.Forms.Rendering
 {
     public sealed class OptionJsonConverter : JsonConverter<Option>
     {

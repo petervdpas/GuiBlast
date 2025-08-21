@@ -1,13 +1,12 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 
-namespace GuiBlast
-{
-    /// Pretty/text and JSON output helpers for FormResult
+namespace GuiBlast.Forms.Result;
+
     public static class FormResultFormatter
     {
         /// Human-readable lines like: key = value  (arrays shown as [a, b, c])
@@ -98,13 +97,3 @@ namespace GuiBlast
             };
         }
     }
-
-    // Handy extensions so you can call result.ToText() / result.ToJson()
-    public static class FormResultExtensions
-    {
-        public static string ToText(this FormResult result) => FormResultFormatter.ToText(result);
-        public static string ToJson(this FormResult result, bool indented = true) => FormResultFormatter.ToJson(result, indented);
-        public static void WriteText(this FormResult result, System.IO.TextWriter? writer = null)
-            => FormResultFormatter.WriteText(result, writer);
-    }
-}

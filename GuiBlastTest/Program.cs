@@ -1,11 +1,14 @@
 ﻿using System;
-using System.IO;
-using GuiBlast;
 using System.Collections.Generic;
+using System.IO;
+using GuiBlast.Forms.Rendering;
+using GuiBlast.Forms.Result;
 
-class Program
+namespace GuiBlast.GuiBlastTest;
+
+public class Program
 {
-    static void Main()
+    private static void Main()
     {
         Theme.Set(ThemeMode.Light);
 
