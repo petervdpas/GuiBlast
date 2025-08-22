@@ -7,6 +7,9 @@ class Program
 {
     static void Main()
     {
+        // Step 0: Set theme
+        Theme.Set(ThemeMode.Dark);
+        
         // Step 1: Prompt for name
         var userName = Prompts.Input("Your Name", "Please enter your name:");
 
@@ -20,6 +23,8 @@ class Program
         };
 
         // Step 4: Show form
+        Theme.Set(ThemeMode.Light);
+        
         var result = DynamicForm.ShowJsonAsync(json, overrides).Result;
 
         // Step 5: Print outcome
