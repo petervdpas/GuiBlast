@@ -4,7 +4,7 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/GuiBlast.svg)](https://www.nuget.org/packages/GuiBlast)
 [![License](https://img.shields.io/github/license/petervdpas/GuiBlast.svg)](https://opensource.org/licenses/MIT)
 
-![RoadWarrior](assets/icon.png)
+![RoadWarrior](https://raw.githubusercontent.com/petervdpas/GuiBlast/master/assets/icon.png)
 
 **GuiBlast** provides simple, cross-platform **modal prompts and dynamic forms** using [Avalonia](https://avaloniaui.net/).
 It works out-of-the-box in **.NET console apps, LINQPad, and PowerShell scripts** — no window management required.
