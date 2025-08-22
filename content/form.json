@@ -1,0 +1,44 @@
+{
+  "title": "Peer",
+  "data": {
+    "name": "Alice",
+    "role": "User",
+    "enabled": true,
+    "quota": 5,
+    "tags": ["a", "c"]
+  },
+  "fields": [
+    { "key": "name", "type": "text", "label": "Name", "required": true },
+    {
+      "key": "role",
+      "type": "select",
+      "label": "Role",
+      "options": [
+        { "value": "User", "label": "User" },
+        { "value": "Admin", "label": "Admin" },
+        { "value": "Guest", "label": "Guest" }
+      ]
+    },
+    { "key": "enabled", "type": "switch", "label": "Enabled" },
+    { "key": "quota", "type": "number", "label": "Quota (GB)", "min": 0, "max": 100 },
+    {
+      "key": "tags",
+      "type": "multiselect",
+      "label": "Tags",
+      "options": [
+        { "value": "a", "label": "a" },
+        { "value": "b", "label": "b" },
+        { "value": "c", "label": "c" }
+      ]
+    },
+    { "key": "when", "type": "datetime", "label": "When" }
+  ],
+  "visibility": [
+    { "field": "role", "eq": "Admin", "show": ["quota"] },
+    { "field": "role", "neq": "Admin", "hide": ["quota"] }
+  ],
+  "actions": [
+    { "id": "save", "label": "Save", "submit": true },
+    { "id": "cancel", "label": "Cancel", "dismiss": true }
+  ]
+} 
