@@ -11,7 +11,7 @@
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>GuiBlast</PackageId>
-        <Version>1.0.8</Version>
+        <Version>1.0.10</Version>
         <Authors>Peter van de Pas</Authors>
         <Description>Simple Avalonia-based modal prompts for .NET, LINQPad, and PowerShell.</Description>
         <PackageTags>Avalonia;UIComponents;LINQPad;PowerShell</PackageTags>
@@ -44,13 +44,16 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Include="linqpad-samples\*">
+            <Pack>true</Pack>
+            <PackagePath>linqpad-samples</PackagePath>
+        </Content>
+    </ItemGroup>
+    
+    <ItemGroup>
         <None Include="assets/icon.png" Pack="true" PackagePath="assets/"/>
         <None Include="assets/LICENSE.txt" Pack="true" PackagePath="assets/"/>
         <None Include="README.md" Pack="true" PackagePath=""/>
-        <!-- Pack .linq files into a folder LINQPad recognizes -->
-        <Content Include="linqpad-samples\**\*.linq" Pack="true" PackagePath="linqpad-samples\" />
-        <!-- Pack all JSON (sample data, configs, etc.) -->
-        <Content Include="linqpad-samples\**\*.json" Pack="true" PackagePath="linqpad-samples\" />
     </ItemGroup>
     
     <ItemGroup>
