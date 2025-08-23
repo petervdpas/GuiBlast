@@ -14,8 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="form.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <None Update="**\*.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 </Project>

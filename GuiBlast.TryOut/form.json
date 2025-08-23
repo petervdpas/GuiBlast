@@ -36,15 +36,9 @@
   "visibility": [
       { "field": "role", "eq": "Admin", "show": ["quota"] },
       { "field": "role", "neq": "Admin", "hide": ["quota"] },
-  
-      { "field": "_roleScope", "eq": "basic",
-        "options": { "for": "role", "include_tags": ["basic"] } },
-  
-      { "field": "_roleScope", "eq": "basic+admin",
-        "options": { "for": "role", "include_tags": ["basic","admin"] } },
-  
-      { "field": "_roleScope", "eq": "all",
-        "options": { "for": "role", "include_tags": ["basic","admin","internal"] } }
+      { "field": "@roleScope", "eq": "basic", "options": { "for": "role", "include_tags": ["basic"] } },
+      { "field": "@roleScope", "eq": "basic+admin", "options": { "for": "role", "include_tags": ["basic","admin"] } },
+      { "field": "@roleScope", "eq": "all", "options": { "for": "role", "include_tags": ["basic","admin","internal"] } }
     ],
   "actions": [
     { "id": "save", "label": "Save", "submit": true },

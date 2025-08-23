@@ -6,9 +6,10 @@ using GuiBlast.Forms.Result;
 
 namespace GuiBlast.TryOut;
 
-class Program
+internal static class Example
 {
-    static void Main()
+    /// <summary>Runs the old sample.</summary>
+    internal static void Run()
     {
         // Step 0: Set theme
         Theme.Set(ThemeMode.Dark);
@@ -21,44 +22,45 @@ class Program
             "Role",
             "Pick your role:",
             ["Administrator", "Power User", "Viewer"],
-            initialValue: "Viewer"); // returns string? (null if canceled)
+            initialValue: "Viewer");
 
         Console.WriteLine($"Role: {role}");
-        
+
         // Step 1.6: Multi select (interests/tags)
         var interests = Prompts.SelectMany(
             "Interests",
             "Pick one or more interests:",
             ["C#", "F#", "Rust", "Go", "Python", "TypeScript"],
-            initialValues: ["C#"]); // returns string[] (empty if canceled)
+            initialValues: ["C#"]);
 
         Console.WriteLine($"Interests: {string.Join(", ", interests)}");
-        
-        // Ask outside the form which scope to show
-        var scope = Prompts.Select(
-            "Which roles can be chosen?",
-            "Pick the scope for the Role dropdown:",
-            ["basic", "basic+admin", "all"],
-            initialValue: "basic"
-        ) ?? "basic";
-        
-        // Step 2: Load form JSON spec
+
+        // Ask outside the form which scope to show (goes into visibilityContext)
+        var scope = Prompts.Select("Role scope", "Which options should be visible?",
+            ["basic", "basic+admin", "all"], "basic") ?? "basic";
+
+        // Load spec
         var json = File.ReadAllText("form.json");
 
-        // Step 3: Pre-fill the form with the name and our selections
-        var overrides = new Dictionary<string, object?>
+        // Prefill editable model
+        var dataOverrides = new Dictionary<string, object?>
         {
-            ["name"] = userName,                          // text
-            ["role"] = role ?? "",                        // single select; coalesce null to empty
-            ["interests"] = interests,                     // multi-select array
-            ["_roleScope"] = scope
+            ["name"] = userName,
+            ["role"] = role ?? "",
+            ["interests"] = interests,
         };
 
-        // Step 4: Show form
-        Theme.Set(ThemeMode.Light);
-        var result = DynamicForm.ShowJsonAsync(json, overrides).Result;
+        // Read-only context for rules (not returned)
+        var visContext = new Dictionary<string, object?>
+        {
+            ["@roleScope"] = scope
+        };
 
-        // Step 5: Print outcome
+        // Show form
+        Theme.Set(ThemeMode.Light);
+        var result = DynamicForm.ShowJsonAsync(json, dataOverrides, visContext).Result;
+
+        // Output
         Console.WriteLine($"Submitted: {result.Submitted}");
         Console.WriteLine("---- TEXT ----");
         Console.WriteLine(result.ToText());

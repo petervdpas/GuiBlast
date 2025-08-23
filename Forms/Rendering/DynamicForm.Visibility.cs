@@ -30,8 +30,8 @@ public static class DynamicFormVisibility
     /// </remarks>
     public static void ApplyVisibility(
         List<VisibilityRule>? rules,
-        Dictionary<string, object?> model,
-        Dictionary<string, Control> containers)
+        IReadOnlyDictionary<string, object?> model,
+        IReadOnlyDictionary<string, Control> containers)
     {
         foreach (var c in containers.Values) c.IsVisible = true; // reset
 
