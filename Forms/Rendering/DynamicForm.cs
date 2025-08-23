@@ -1,4 +1,8 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -26,7 +30,7 @@ public static class DynamicForm
     /// <param name="height">Optional window height.</param>
     /// <param name="canResize">If <c>true</c>, the window can be resized by the user.</param>
     /// <returns>
-    /// A <see cref="Task{TResult}"/> that completes with the <see cref="FormResult"/>
+    /// A <see cref="Task"/> that completes with the <see cref="FormResult"/>
     /// after the user submits or cancels the form.
     /// </returns>
     /// <exception cref="ArgumentException">Thrown if the JSON spec is invalid.</exception>

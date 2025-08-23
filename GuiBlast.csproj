@@ -11,7 +11,7 @@
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>GuiBlast</PackageId>
-        <Version>1.0.10</Version>
+        <Version>1.0.12</Version>
         <Authors>Peter van de Pas</Authors>
         <Description>Simple Avalonia-based modal prompts for .NET, LINQPad, and PowerShell.</Description>
         <PackageTags>Avalonia;UIComponents;LINQPad;PowerShell</PackageTags>
