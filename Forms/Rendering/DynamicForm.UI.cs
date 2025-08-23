@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -135,7 +136,8 @@ public static class DynamicFormUi
                 var combo = new ComboBox
                 {
                     ItemsSource = opts,
-                    HorizontalAlignment = HorizontalAlignment.Stretch
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Tag = opts
                 };
                 var init = initial?.ToString() ?? "";
                 combo.SelectedItem = opts.FirstOrDefault(o => o.Value == init) ?? opts.FirstOrDefault();
@@ -150,9 +152,9 @@ public static class DynamicFormUi
                 {
                     ItemsSource = opts,
                     SelectionMode = SelectionMode.Multiple,
-                    Height = 120
+                    Height = 120,
+                    Tag = opts
                 };
-
                 HashSet<string>? wanted = null;
                 if (initial is IEnumerable<object?> initSeq)
                     wanted = initSeq.Select(x => x?.ToString() ?? "").ToHashSet();
@@ -187,21 +189,21 @@ public static class DynamicFormUi
             case "radio":
             {
                 var opts = DynamicFormHelpers.NormalizeOptions(f);
-                var sp = new StackPanel { Orientation = Orientation.Vertical, Spacing = 4 };
+                var sp = new StackPanel
+                {
+                    Orientation = Orientation.Vertical, Spacing = 4,
+                    Tag = opts
+                };
                 foreach (var o in opts)
                 {
                     var rb = new RadioButton { Content = o.Label, Tag = o.Value };
                     if ((initial?.ToString() ?? "") == o.Value) rb.IsChecked = true;
                     sp.Children.Add(rb);
                 }
-
-                getter = () =>
-                {
-                    foreach (var child in sp.Children.OfType<RadioButton>())
-                        if (child.IsChecked == true)
-                            return child.Tag?.ToString();
-                    return null;
-                };
+                getter = () => (from child 
+                    in sp.Children.OfType<RadioButton>() 
+                    where child.IsChecked == true 
+                    select child.Tag?.ToString()).FirstOrDefault();
                 return sp;
             }
 
@@ -321,43 +323,67 @@ public static class DynamicFormUi
                     if (e.Property == TextBox.TextProperty) onChange();
                 };
                 break;
-            case CheckBox cb:
-                cb.PropertyChanged += (_, e) =>
+
+            case ToggleButton tb:
+                tb.PropertyChanged += (_, e) =>
                 {
                     if (e.Property == ToggleButton.IsCheckedProperty) onChange();
                 };
                 break;
-            case ToggleSwitch ts:
-                ts.PropertyChanged += (_, e) =>
-                {
-                    if (e.Property == ToggleButton.IsCheckedProperty) onChange();
-                };
-                break;
+
             case ComboBox combo:
-                combo.SelectionChanged += (_, _) => onChange();
+                combo.SelectionChanged += (_, _) =>
+                {
+                    if (combo.Resources.ContainsKey("__updatingOptions")) return;
+                    onChange();
+                };
                 break;
+
             case ListBox list:
-                list.SelectionChanged += (_, _) => onChange();
+                list.SelectionChanged += (_, _) =>
+                {
+                    if (list.Resources.ContainsKey("__updatingOptions")) return;
+                    onChange();
+                };
                 break;
+
             case DatePicker dp:
                 dp.PropertyChanged += (_, e) =>
                 {
                     if (e.Property == DatePicker.SelectedDateProperty) onChange();
                 };
                 break;
+
             case TimePicker tp:
                 tp.PropertyChanged += (_, e) =>
                 {
                     if (e.Property == TimePicker.SelectedTimeProperty) onChange();
                 };
                 break;
+
             case Panel panel:
+                // wire existing children once
                 foreach (var child in panel.Children.OfType<Control>())
                     WireChanges(child, onChange);
+
+                // subscribe at most once per panel
+                const string wiredKey = "__wireChangesSubscribed";
+                if (!panel.Resources.ContainsKey(wiredKey))
+                {
+                    panel.Resources[wiredKey] = true;
+
+                    panel.Children.CollectionChanged += (_, args) =>
+                    {
+                        if (args is not { NewItems.Count: > 0 }) return;
+                        
+                        foreach (var added in args.NewItems!.OfType<Control>())
+                            WireChanges(added, onChange);  // only new controls
+                    };
+                }
                 break;
         }
     }
-
+    
     /// <summary>
     /// Builds OK/Cancel buttons from the provided <see cref="ActionSpec"/>s,
     /// falling back to default “OK” and “Cancel” if none are supplied.

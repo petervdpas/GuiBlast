@@ -34,6 +34,14 @@ class Program
 
         Console.WriteLine($"Interests: {string.Join(", ", interests)}");
         
+        // Ask outside the form which scope to show
+        var scope = Prompts.Select(
+            "Which roles can be chosen?",
+            "Pick the scope for the Role dropdown:",
+            ["basic", "basic+admin", "all"],
+            initialValue: "basic"
+        ) ?? "basic";
+        
         // Step 2: Load form JSON spec
         var json = File.ReadAllText("form.json");
 
@@ -42,7 +50,8 @@ class Program
         {
             ["name"] = userName,                          // text
             ["role"] = role ?? "",                        // single select; coalesce null to empty
-            ["interests"] = interests                     // multi-select array
+            ["interests"] = interests,                     // multi-select array
+            ["_roleScope"] = scope
         };
 
         // Step 4: Show form

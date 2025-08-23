@@ -95,6 +95,7 @@ public static class DynamicForm
                 {
                     model[f.Key] = getter();
                     DynamicFormVisibility.ApplyVisibility(spec.Visibility, model, fieldContainers);
+                    DynamicFormOptionVisibility.ApplyOptionFilters(spec.Visibility, model, fieldContainers); 
                 });
                 fieldContainers[f.Key] = row;
                 inputGetters[f.Key] = getter;
@@ -105,7 +106,8 @@ public static class DynamicForm
 
             // Initial visibility
             DynamicFormVisibility.ApplyVisibility(spec.Visibility, model, fieldContainers);
-
+            DynamicFormOptionVisibility.ApplyOptionFilters(spec.Visibility, model, fieldContainers);
+            
             // Buttons
             var (okBtn, cancelBtn) = DynamicFormUi.BuildButtons(spec.Actions);
             root.Children.Add(UiHelpers.ButtonRow(cancelBtn, okBtn));

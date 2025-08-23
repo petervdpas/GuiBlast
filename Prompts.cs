@@ -140,29 +140,27 @@ namespace GuiBlast
                 if (items.Count == 0)
                     return null;
 
-                var itemTmpl = new FuncDataTemplate<SelectItem>((x, _) =>
-                    new TextBlock { Text = x.Label }, true);
+                // Use bindings in templates (no captured Label!)
+                var itemTemplate = new FuncDataTemplate<SelectItem>((_, _) =>
+                        new TextBlock
+                            { [!TextBlock.TextProperty] = new Avalonia.Data.Binding(nameof(SelectItem.Label)) },
+                    supportsRecycling: true);
 
                 var combo = new ComboBox
                 {
                     ItemsSource = items,
                     Margin = new Thickness(0, 8, 0, 8),
-                    ItemTemplate = itemTmpl,
-                    SelectionBoxItemTemplate = itemTmpl, // <-- ensures caption matches selection
+                    ItemTemplate = itemTemplate,
+                    SelectionBoxItemTemplate = itemTemplate,
                     MaxDropDownHeight = 360
                 };
 
-                // Set initial selection by item, not index
-                if (!string.IsNullOrWhiteSpace(initialValue))
-                {
-                    var match =
-                        items.FirstOrDefault(i => string.Equals(i.Value, initialValue, StringComparison.Ordinal));
-                    combo.SelectedItem = match ?? items.FirstOrDefault();
-                }
-                else
-                {
-                    combo.SelectedItem = items.FirstOrDefault();
-                }
+                // Select by object (match on Value); fall back to first
+                combo.SelectedItem =
+                    (!string.IsNullOrWhiteSpace(initialValue)
+                        ? items.FirstOrDefault(i => string.Equals(i.Value, initialValue, StringComparison.Ordinal))
+                        : null)
+                    ?? items.FirstOrDefault();
 
                 var ok = new Button
                     { Content = "OK", MinWidth = 80, IsDefault = true, IsEnabled = combo.SelectedItem != null };
@@ -198,7 +196,7 @@ namespace GuiBlast
                 cancel.Click += (_, _) => Complete(null);
                 combo.DoubleTapped += (_, _) =>
                 {
-                    if (combo.SelectedItem is SelectItem sel) Complete(sel.Value);
+                    if (combo.SelectedItem is SelectItem s) Complete(s.Value);
                 };
 
                 win.Opened += (_, _) => combo.Focus();
