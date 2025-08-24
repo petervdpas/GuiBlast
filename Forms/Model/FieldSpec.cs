@@ -4,90 +4,98 @@ using System.Text.Json.Serialization;
 namespace GuiBlast.Forms.Model;
 
 /// <summary>
-/// Defines a single form field specification, including its type, label, validation, and options.
+/// Describes a single form field: type, label, validation, defaults, and (when applicable) options.
 /// </summary>
 public sealed class FieldSpec
 {
     /// <summary>
-    /// Unique key identifying the field. Used to bind values.
+    /// Unique key for this field (used as the value key in the result model).
     /// </summary>
     public string Key { get; init; } = "";
 
     /// <summary>
-    /// Field type (e.g. text, number, textarea, password, email, select, multiselect,
-    /// checkbox, switch, radio, slider, range, date, time, datetime, file, color).
+    /// Field type (e.g., <c>text</c>, <c>number</c>, <c>textarea</c>, <c>password</c>, <c>email</c>,
+    /// <c>select</c>, <c>multiselect</c>, <c>checkbox</c>, <c>switch</c>, <c>radio</c>, <c>slider</c>,
+    /// <c>range</c>, <c>date</c>, <c>time</c>, <c>datetime</c>, <c>file</c>, <c>color</c>).
     /// </summary>
     public string Type { get; init; } = "text";
 
     /// <summary>
-    /// Label displayed to the user.
+    /// Display label shown to the user.
     /// </summary>
     [JsonInclude]
     public string? Label { get; init; }
 
     /// <summary>
-    /// Placeholder text (for inputs such as text boxes).
+    /// Placeholder text for inputs that support it (e.g., text/textarea).
     /// </summary>
     [JsonInclude]
     public string? Placeholder { get; init; }
 
     /// <summary>
-    /// Whether the field is required.
+    /// When <c>true</c>, the field must be provided (basic required check).
     /// </summary>
     [JsonInclude]
     public bool? Required { get; init; }
 
     /// <summary>
-    /// Minimum numeric or date/time value.
+    /// Minimum allowed value (numeric or date/time; interpretation depends on <see cref="Type"/>).
     /// </summary>
     [JsonInclude]
     public double? Min { get; init; }
 
     /// <summary>
-    /// Maximum numeric or date/time value.
+    /// Maximum allowed value (numeric or date/time; interpretation depends on <see cref="Type"/>).
     /// </summary>
     [JsonInclude]
     public double? Max { get; init; }
 
     /// <summary>
-    /// Step value for numeric inputs (e.g. increment size).
+    /// Step size for numeric inputs (e.g., increment amount).
     /// </summary>
     [JsonInclude]
     public double? Step { get; init; }
 
     /// <summary>
-    /// Number of rows (for textarea).
+    /// Number of rows for a <c>textarea</c>.
     /// </summary>
     [JsonInclude]
     public int? Rows { get; init; }
 
     /// <summary>
-    /// Regex pattern for validation.
+    /// Regular expression pattern used for validation (applies to text-like inputs).
     /// </summary>
     [JsonInclude]
     public string? Pattern { get; init; }
 
     /// <summary>
-    /// If <c>true</c>, validates as an email address.
+    /// When <c>true</c>, validates the value as an email address.
     /// </summary>
     [JsonInclude]
     public bool? Email { get; init; }
 
     /// <summary>
-    /// List of options (for select, multiselect, or radio fields).
+    /// Options for selectable inputs (<c>select</c>, <c>multiselect</c>, <c>radio</c>).
+    /// Ignored for other field types.
     /// </summary>
     [JsonInclude]
     public List<Option>? Options { get; init; }
 
     /// <summary>
-    /// Additional description or help text for the field.
+    /// Optional help/description text shown with the field.
     /// </summary>
     [JsonInclude]
     public string? Description { get; init; }
 
     /// <summary>
-    /// Default value for the field.
+    /// Initial value for the field (type depends on <see cref="Type"/>).
     /// </summary>
     [JsonInclude]
     public object? Default { get; init; }
+
+    /// <summary>
+    /// Field-level tags used by visibility rules (<see cref="VisibilityRule.ShowTags"/> / <see cref="VisibilityRule.HideTags"/>).
+    /// </summary>
+    [JsonInclude]
+    public string[]? Tags { get; set; }
 }

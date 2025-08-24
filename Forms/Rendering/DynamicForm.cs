@@ -98,6 +98,7 @@ public static class DynamicForm
             {
                 var initial = model.TryGetValue(f.Key, out var v) ? v : f.Default;
                 var row = DynamicFormUi.BuildFieldRow(f, initial, out var getter, out var errorBlock);
+                row.Tag = f.Tags; 
                 model[f.Key] = initial;
                 
                 DynamicFormUi.WireChanges(row, () =>

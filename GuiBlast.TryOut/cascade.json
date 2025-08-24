@@ -27,12 +27,20 @@
         { "value": "nyc", "label": "New York", "tags": ["US"] },
         { "value": "sea", "label": "Seattle", "tags": ["US"] }
       ]
+    },
+    {
+      "key": "postcode",
+      "type": "text",
+      "label": "Postcode (NL only)",
+      "placeholder": "e.g. 1234 AB"
     }
   ],
   "visibility": [
     { "field": "country", "eq": "NL", "options": { "for": "city", "include_tags": ["NL"] } },
     { "field": "country", "eq": "DE", "options": { "for": "city", "include_tags": ["DE"] } },
-    { "field": "country", "eq": "US", "options": { "for": "city", "include_tags": ["US"] } }
+    { "field": "country", "eq": "US", "options": { "for": "city", "include_tags": ["US"] } },
+    { "field": "country", "eq": "NL",  "show": ["postcode"] },
+    { "field": "country", "neq": "NL", "hide": ["postcode"] }
   ],
   "actions": [
     { "id": "ok", "label": "OK", "submit": true },
