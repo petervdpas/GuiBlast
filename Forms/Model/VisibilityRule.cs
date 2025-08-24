@@ -57,14 +57,14 @@ public sealed class VisibilityRule
     /// Show all fields whose containers carry any of these tags (set via <see cref="FieldSpec.Tags"/>)
     /// when the rule matches.
     /// </summary>
-    [JsonInclude]
+    [JsonInclude, JsonPropertyName("show_tags")]
     public string[]? ShowTags { get; set; }
 
     /// <summary>
     /// Hide all fields whose containers carry any of these tags (set via <see cref="FieldSpec.Tags"/>)
     /// when the rule matches. Hide takes precedence over show.
     /// </summary>
-    [JsonInclude]
+    [JsonInclude, JsonPropertyName("hide_tags")]
     public string[]? HideTags { get; set; }
 
     /// <summary>

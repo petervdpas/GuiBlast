@@ -32,15 +32,24 @@
       "key": "postcode",
       "type": "text",
       "label": "Postcode (NL only)",
-      "placeholder": "e.g. 1234 AB"
+      "placeholder": "e.g. 1234 AB",
+      "tags": ["nl_only"]
+    },
+    {
+      "key": "postal",
+      "type": "text",
+      "label": "Postal/ZIP (non-NL)",
+      "placeholder": "e.g. 10115 or 98101",
+      "tags": ["intl_only"]
     }
   ],
   "visibility": [
     { "field": "country", "eq": "NL", "options": { "for": "city", "include_tags": ["NL"] } },
     { "field": "country", "eq": "DE", "options": { "for": "city", "include_tags": ["DE"] } },
     { "field": "country", "eq": "US", "options": { "for": "city", "include_tags": ["US"] } },
-    { "field": "country", "eq": "NL",  "show": ["postcode"] },
-    { "field": "country", "neq": "NL", "hide": ["postcode"] }
+
+    { "field": "country", "eq": "NL",  "show_tags": ["nl_only"],  "hide_tags": ["intl_only"] },
+    { "field": "country", "neq": "NL", "show_tags": ["intl_only"], "hide_tags": ["nl_only"] }
   ],
   "actions": [
     { "id": "ok", "label": "OK", "submit": true },
