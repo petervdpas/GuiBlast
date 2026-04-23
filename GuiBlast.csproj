@@ -1,67 +1,69 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>disable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <IsPackable>true</IsPackable>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <PackageOutputPath>bin\$(Configuration)</PackageOutputPath>
-        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageId>GuiBlast</PackageId>
-        <Version>1.0.18</Version>
-        <Authors>Peter van de Pas</Authors>
-        <Description>Simple Avalonia-based modal prompts for .NET, LINQPad, and PowerShell.</Description>
-        <PackageTags>Avalonia;UIComponents;LINQPad;PowerShell</PackageTags>
-        <PackageLicenseFile>assets/LICENSE.txt</PackageLicenseFile>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageIcon>assets/icon.png</PackageIcon>
-        <DebugType>embedded</DebugType>
-        <Deterministic>true</Deterministic>
-        <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
-        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <EnableSourceLink>true</EnableSourceLink>
-        <RepositoryUrl>https://github.com/petervdpas/GuiBlast</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <RestoreLockedMode>true</RestoreLockedMode>
-    </PropertyGroup>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageOutputPath>bin\$(Configuration)</PackageOutputPath>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>GuiBlast</PackageId>
+    <Version>1.0.18</Version>
+    <Authors>Peter van de Pas</Authors>
+    <Description>Simple Avalonia-based modal prompts for .NET, LINQPad, and PowerShell.</Description>
+    <PackageTags>Avalonia;UIComponents;LINQPad;PowerShell</PackageTags>
+    <PackageLicenseFile>assets/LICENSE.txt</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>assets/icon.png</PackageIcon>
+    <DebugType>embedded</DebugType>
+    <Deterministic>true</Deterministic>
+    <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <EnableSourceLink>true</EnableSourceLink>
+    <RepositoryUrl>https://github.com/petervdpas/GuiBlast</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RestoreLockedMode>true</RestoreLockedMode>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="GuiBlast.Tests/**" />
+    <Compile Remove="GuiBlast.TryOut/**" />
+    <None Remove="GuiBlast.Tests/**" />
+    <None Remove="GuiBlast.TryOut/**" />
+    <EmbeddedResource Remove="GuiBlast.Tests/**" />
+    <EmbeddedResource Remove="GuiBlast.TryOut/**" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.3.4" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4"/>
-        <PackageReference Include="Avalonia.Headless" Version="11.3.4" />
-        <PackageReference Include="Avalonia.Headless.XUnit" Version="11.3.4" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4"/>
-        <PackageReference Include="xunit.assert" Version="2.9.2" />
-        <PackageReference Include="xunit.core" Version="2.9.2" />
-        <PackageReference Include="xunit.extensibility.core" Version="2.9.2" />
-        <PackageReference Include="xunit.extensibility.execution" Version="2.9.2" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="linqpad-samples\*">
-            <Pack>true</Pack>
-            <PackagePath>linqpad-samples</PackagePath>
-        </Content>
-    </ItemGroup>
-    
-    <ItemGroup>
-        <None Include="assets/icon.png" Pack="true" PackagePath="assets/"/>
-        <None Include="assets/LICENSE.txt" Pack="true" PackagePath="assets/"/>
-        <None Include="README.md" Pack="true" PackagePath=""/>
-    </ItemGroup>
-    
-    <ItemGroup>
-        <AvaloniaResource Include="Assets\hacker.ico" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Update="linqpad-samples\**\*.linq" CopyToOutputDirectory="Never" />
-        <Content Update="linqpad-samples\**\*.json" CopyToOutputDirectory="Never" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.0.1" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.0.1" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.1" />
+    <PackageReference Include="Avalonia.Headless" Version="12.0.1" />
+    <PackageReference Include="Avalonia.Headless.XUnit" Version="12.0.1" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.1" />
+    <PackageReference Include="xunit.v3.extensibility.core" Version="3.2.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="linqpad-samples\*">
+      <Pack>true</Pack>
+      <PackagePath>linqpad-samples</PackagePath>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets/icon.png" Pack="true" PackagePath="assets/" />
+    <None Include="assets/LICENSE.txt" Pack="true" PackagePath="assets/" />
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="assets/hacker.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="linqpad-samples\**\*.linq" CopyToOutputDirectory="Never" />
+    <Content Update="linqpad-samples\**\*.json" CopyToOutputDirectory="Never" />
+  </ItemGroup>
 </Project>

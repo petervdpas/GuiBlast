@@ -93,7 +93,7 @@ public static class DynamicFormUi
             case "email":
             case "password":
             {
-                var tb = new TextBox { Watermark = f.Placeholder ?? "" };
+                var tb = new TextBox { PlaceholderText = f.Placeholder ?? "" };
                 if (f.Type == "password") tb.PasswordChar = '•';
                 tb.Text = initial?.ToString() ?? "";
                 getter = () => tb.Text;
@@ -102,7 +102,7 @@ public static class DynamicFormUi
 
             case "textarea":
             {
-                var tb = new TextBox { AcceptsReturn = true, MinHeight = 60, Watermark = f.Placeholder ?? "" };
+                var tb = new TextBox { AcceptsReturn = true, MinHeight = 60, PlaceholderText = f.Placeholder ?? "" };
                 if (f.Rows is { } r and > 0) tb.MinHeight = 20 * r;
                 tb.Text = initial?.ToString() ?? "";
                 getter = () => tb.Text;

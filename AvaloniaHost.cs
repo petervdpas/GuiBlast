@@ -134,7 +134,7 @@ namespace GuiBlast
                 {
                     ShowInTaskbar = false,
                     CanResize = false,
-                    SystemDecorations = SystemDecorations.None,     // no chrome
+                    WindowDecorations = WindowDecorations.None,     // no chrome
                     Background = Brushes.Transparent,
                     Opacity = 0,                                     // fully transparent
                     Width = 1,
