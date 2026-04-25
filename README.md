@@ -80,6 +80,8 @@ GuiBlast forms are defined declaratively in JSON:
 ```jsonc
 {
   "title": "Peer",
+  "size": { "width": 420, "height": 320 },
+  "resizable": true,
   "data": {
     "name": "Alice",
     "role": "User",

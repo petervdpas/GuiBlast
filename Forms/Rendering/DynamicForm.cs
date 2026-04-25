@@ -124,7 +124,8 @@ public static class DynamicForm
 
             var w = UiHelpers.NewDialog(spec.Title,
                 new ScrollViewer { Content = root, VerticalScrollBarVisibility = ScrollBarVisibility.Auto },
-                width ?? spec.Size?.Width, height ?? spec.Size?.Height, canResize);
+                width ?? spec.Size?.Width, height ?? spec.Size?.Height,
+                canResize || spec.Resizable);
             var tcs = new TaskCompletionSource<FormResult>();
 
             okBtn.IsDefault = true;

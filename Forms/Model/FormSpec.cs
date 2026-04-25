@@ -25,6 +25,14 @@ public sealed class FormSpec
     public SizeSpec? Size { get; init; }
 
     /// <summary>
+    /// When <c>true</c>, the rendered dialog can be resized by the user.
+    /// Default is <c>false</c>. The <c>canResize</c> argument on
+    /// <see cref="Rendering.DynamicForm.ShowJsonAsync"/> is OR-merged with
+    /// this value, so a caller can opt in even when the spec doesn't.
+    /// </summary>
+    public bool Resizable { get; init; }
+
+    /// <summary>
     /// Initial data values for fields, keyed by field name.
     /// </summary>
     public Dictionary<string, JsonElement>? Data { get; set; }
