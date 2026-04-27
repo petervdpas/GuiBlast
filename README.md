@@ -138,6 +138,33 @@ Validation & conditional visibility can be expressed directly in JSON.
 
 ---
 
+## 🤖 AI assistants
+
+This assembly carries the **Blast.PrimaryFacade** convention: an
+`[AssemblyMetadata("Blast.PrimaryFacade", "...")]` attribute names the
+canonical front-door type(s) of the package, so AI helpers (e.g.
+TaskBlaster's script assistant) can identify the entry points without
+scanning every public type.
+
+For GuiBlast the front doors are:
+
+| Type | Purpose |
+|------|---------|
+| `GuiBlast.Prompts` | Quick modal prompts: `Input`, `Confirm`. |
+| `GuiBlast.Forms.Rendering.DynamicForm` | JSON-driven forms: `ShowJsonAsync` and friends. |
+
+Read it back from a loaded assembly via reflection:
+
+```csharp
+var facade = typeof(GuiBlast.Prompts).Assembly
+    .GetCustomAttributes<AssemblyMetadataAttribute>()
+    .FirstOrDefault(a => a.Key == "Blast.PrimaryFacade")?.Value;
+```
+
+The value is a hint for tooling; consumers don't need to read it.
+
+---
+
 ## 📜 License
 
 [MIT](https://opensource.org/licenses/MIT)
